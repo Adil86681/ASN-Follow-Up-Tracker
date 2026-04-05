@@ -544,7 +544,7 @@
           <option>Singapore</option>
           <option>Tokyo</option>
           <option>Mexico City</option>
-          <option>São Paulo</option>
+          <option>Sao Paulo</option>
         </select>
       </div>
       <div class="form-group">
@@ -630,17 +630,26 @@ const EDITABLE_COLS = [0, 2, 3, 4, 5, 6, 7, 8, 9]; // everything except col 1 (o
 
 // ── Init ──
 document.addEventListener('DOMContentLoaded', () => {
-  if (!CONFIG.APPS_SCRIPT_URL) {
-    document.getElementById('configBanner').style.display = 'block';
-    // Load with sample data for preview
-    loadSampleData();
-    return;
+  try {
+    if (!CONFIG.APPS_SCRIPT_URL) {
+      document.getElementById('configBanner').style.display = 'block';
+      loadSampleData();
+      return;
+    }
+    refreshData();
+  } catch(err) {
+    console.error('Init error:', err);
+    document.getElementById('loadingSpinner').innerHTML = 'Error: ' + err.message;
   }
-  refreshData();
 });
 
 // ── Data Loading ──
 async function refreshData() {
+  if (!CONFIG.APPS_SCRIPT_URL) {
+    loadSampleData();
+    showToast('No Apps Script URL configured - showing sample data', 'error');
+    return;
+  }
   showSpinner(true);
   try {
     const [pending, completed] = await Promise.all([
@@ -989,17 +998,18 @@ function esc(str) {
 // ── Sample Data (when no Apps Script URL set) ──
 function loadSampleData() {
   allData.Pending = [
-    ['Germany EU (Dreieich)', 'fb86eafe-e0a4-4cba-8a26-ea1cb16aafe8', 'LastPass', '100012762', 'https://www.amazon.de/-/en/gp/your-account/ship-track?itemId=ogqkmxnrqoopso', 'High', 'tracking shows del 28 Feb — 1 M650 Mouse', '', '', ''],
-    ['Coventry', 'd22db7f9-47a9-4250-aee9-d0a88e43eb8b', 'Wise', 'PO232', 'https://www.dhl.com/us-en/home/tracking.html?tracking-id=JD014600012549409209', 'High', '1 of 2 Del 5 March — 1 of 2 YubiKey 5C Nano', '', '', ''],
+    ['Germany EU (Dreieich)', 'fb86eafe-e0a4-4cba-8a26-ea1cb16aafe8', 'LastPass', '100012762', 'https://www.amazon.de/-/en/gp/your-account/ship-track?itemId=ogqkmxnrqoopso', 'High', 'tracking shows del 28 Feb - 1 M650 Mouse', '', '', ''],
+    ['Coventry', 'd22db7f9-47a9-4250-aee9-d0a88e43eb8b', 'Wise', 'PO232', 'https://www.dhl.com/us-en/home/tracking.html?tracking-id=JD014600012549409209', 'High', '1 of 2 Del 5 March - 1 of 2 YubiKey 5C Nano', '', '', ''],
     ['Chennai', '973a5f7d-2d82-4ec6-948b-286143e5c1e9', 'Velocity Global', '100012008', 'Blue Dart: 53636519591', 'High', 'Date of Delivery 23 Feb 2026', '', '', ''],
     ['Chennai', 'f0d36d39-5c2e-414d-9ba8-eef5d4e23a2c', 'Velocity Global', '100012393', 'Blue Dart: 53639209853', 'High', 'Date of Delivery 09 Mar 2026', '', '', ''],
     ['Chennai', '5fb76a07-06b7-449e-8e20-c08179349d35', 'Velocity Global', '100012696', 'Blue Dart: 53639209875', 'High', 'Date of Delivery 09 Mar 2026', '', '', ''],
   ];
   allData.Completed = [];
+  document.getElementById('loadingSpinner').style.display = 'none';
+  document.getElementById('dataTable').style.display = 'table';
   updateCounts();
   populateFilters();
   applyFilters();
-  showSpinner(false);
 }
 
 // ── Close modal on overlay click ──
