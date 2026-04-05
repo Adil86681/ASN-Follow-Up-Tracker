@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASN Follow Up Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #111827;
+    --bg-card: #1a2236;
+    --bg-row-hover: #1e2a42;
+    --bg-input: #0f1629;
+    --border: #243049;
+    --border-focus: #3b82f6;
+    --text-primary: #e8ecf4;
+    --text-secondary: #8896b0;
+    --text-muted: #5a6a84;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --accent-glow: rgba(59, 130, 246, 0.15);
+    --red: #ef4444;
+    --red-bg: rgba(239, 68, 68, 0.1);
+    --red-border: rgba(239, 68, 68, 0.3);
+    --orange: #f59e0b;
+    --orange-bg: rgba(245, 158, 11, 0.1);
+    --orange-border: rgba(245, 158, 11, 0.3);
+    --green: #10b981;
+    --green-bg: rgba(16, 185, 129, 0.1);
+    --green-border: rgba(16, 185, 129, 0.3);
+    --purple: #8b5cf6;
+    --purple-bg: rgba(139, 92, 246, 0.1);
+    --cyan: #06b6d4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .logo {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px; color: #fff;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  }
+  .header-title { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+  .header-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  /* ── Buttons ── */
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--bg-row-hover); border-color: var(--accent); }
+  .btn-primary {
+    background: var(--accent); border-color: var(--accent); color: #fff;
+  }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-danger { color: var(--red); border-color: var(--red-border); }
+  .btn-danger:hover { background: var(--red-bg); }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .btn-icon { padding: 6px 8px; }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex; gap: 2px;
+    background: var(--bg-input);
+    border-radius: 10px; padding: 3px;
+  }
+  .tab {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    padding: 7px 18px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab.active {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  }
+  .tab:not(.active):hover { color: var(--text-primary); }
+  .tab .badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 20px; height: 20px;
+    border-radius: 10px;
+    font-size: 11px; font-weight: 700;
+    padding: 0 6px; margin-left: 6px;
+    background: rgba(255,255,255,0.15);
+  }
+  .tab:not(.active) .badge { background: var(--border); }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    padding: 16px 32px;
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-secondary);
+  }
+  .search-box {
+    flex: 1; min-width: 200px; max-width: 360px;
+    position: relative;
+  }
+  .search-box svg {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--text-muted); pointer-events: none;
+  }
+  .search-box input {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 9px 12px 9px 38px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-box input:focus { border-color: var(--accent); }
+  .search-box input::placeholder { color: var(--text-muted); }
+
+  .filter-select {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    outline: none;
+    min-width: 130px;
+    cursor: pointer;
+  }
+  .filter-select:focus { border-color: var(--accent); }
+
+  .spacer { flex: 1; }
+
+  /* ── Stats Bar ── */
+  .stats-bar {
+    display: flex; gap: 16px; padding: 12px 32px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .stat-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .stat-chip .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .stat-chip .val { font-weight: 700; font-size: 14px; }
+
+  /* ── Table ── */
+  .table-wrap {
+    padding: 0 32px 32px;
+    overflow-x: auto;
+    margin-top: 16px;
+  }
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    min-width: 1100px;
+  }
+  thead th {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg-card);
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+  }
+  thead th:hover { color: var(--text-primary); }
+  thead th .sort-arrow { margin-left: 4px; font-size: 10px; opacity: 0.5; }
+  thead th.sorted .sort-arrow { opacity: 1; color: var(--accent); }
+
+  tbody tr {
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody tr:hover { background: var(--bg-row-hover); }
+  tbody tr:last-child td { border-bottom: none; }
+
+  td {
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid rgba(36, 48, 73, 0.5);
+    vertical-align: top;
+    max-width: 220px;
+  }
+
+  td.editable {
+    cursor: text;
+    position: relative;
+    border-radius: 4px;
+  }
+  td.editable:hover {
+    outline: 1px dashed var(--text-muted);
+    outline-offset: -2px;
+  }
+  td.editable.editing {
+    padding: 4px 6px;
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+  td.editable textarea,
+  td.editable input {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text-primary);
+    background: var(--bg-input);
+    border: none;
+    padding: 6px 8px;
+    border-radius: 4px;
+    outline: none;
+    resize: vertical;
+    min-height: 32px;
+  }
+
+  /* Priority badges */
+  .priority-badge {
+    display: inline-flex;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .priority-High { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+  .priority-Medium { background: var(--orange-bg); color: var(--orange); border: 1px solid var(--orange-border); }
+  .priority-Low { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+
+  /* GEO tags */
+  .geo-tag {
+    display: inline-flex;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--purple-bg);
+    color: var(--purple);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    white-space: nowrap;
+  }
+
+  /* Tracking link */
+  .tracking-link {
+    color: var(--cyan);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    word-break: break-all;
+  }
+  .tracking-link:hover { text-decoration: underline; }
+
+  /* UUID mono */
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* Row actions */
+  .row-actions {
+    display: flex; gap: 4px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  tbody tr:hover .row-actions { opacity: 1; }
+
+  /* ── Modal / Form ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    width: 95%; max-width: 640px;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+  }
+  .modal h2 {
+    font-size: 18px; font-weight: 700;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label {
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--accent); }
+  .form-group textarea { resize: vertical; min-height: 60px; }
+  .form-actions {
+    display: flex; gap: 10px; justify-content: flex-end;
+    margin-top: 20px;
+  }
+
+  /* ── Toast ── */
+  .toast-container {
+    position: fixed; bottom: 24px; right: 24px;
+    z-index: 200;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .toast {
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px; font-weight: 500;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    animation: slideIn 0.3s ease;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .toast.success { border-color: var(--green-border); }
+  .toast.error { border-color: var(--red-border); }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ── Spinner ── */
+  .spinner {
+    display: flex; align-items: center; justify-content: center;
+    padding: 80px 0;
+    color: var(--text-muted);
+    font-size: 14px;
+    gap: 12px;
+  }
+  .spinner .ring {
+    width: 24px; height: 24px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Config banner ── */
+  .config-banner {
+    background: var(--orange-bg);
+    border: 1px solid var(--orange-border);
+    border-radius: 10px;
+    margin: 16px 32px;
+    padding: 14px 20px;
+    font-size: 13px;
+    color: var(--orange);
+    display: none;
+  }
+  .config-banner code {
+    background: rgba(245, 158, 11, 0.15);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .header, .toolbar, .stats-bar, .table-wrap { padding-left: 16px; padding-right: 16px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .config-banner { margin: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">A</div>
+    <div>
+      <div class="header-title">ASN Follow Up Tracker</div>
+      <div class="header-sub">Warehouse Late Delivery Tracking</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="tabs">
+      <button class="tab active" data-tab="Pending" onclick="switchTab('Pending')">
+        Pending <span class="badge" id="pendingCount">-</span>
+      </button>
+      <button class="tab" data-tab="Completed" onclick="switchTab('Completed')">
+        Completed <span class="badge" id="completedCount">-</span>
+      </button>
+    </div>
+    <button class="btn btn-primary" onclick="openAddForm()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Row
+    </button>
+    <button class="btn" onclick="refreshData()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Refresh
+    </button>
+  </div>
+</div>
+
+<!-- Config Banner (shown if Apps Script URL not set) -->
+<div class="config-banner" id="configBanner">
+  ⚠️ <strong>Setup required:</strong> Set your Apps Script deployment URL in the <code>CONFIG.APPS_SCRIPT_URL</code> variable at the bottom of this file's <code>&lt;script&gt;</code> section.
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <div class="search-box">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="searchInput" placeholder="Search orders, clients, PO numbers..." oninput="applyFilters()">
+  </div>
+  <select class="filter-select" id="geoFilter" onchange="applyFilters()">
+    <option value="">All GEOs</option>
+  </select>
+  <select class="filter-select" id="priorityFilter" onchange="applyFilters()">
+    <option value="">All Priorities</option>
+    <option value="High">High</option>
+    <option value="Medium">Medium</option>
+    <option value="Low">Low</option>
+  </select>
+  <select class="filter-select" id="clientFilter" onchange="applyFilters()">
+    <option value="">All Clients</option>
+  </select>
+  <div class="spacer"></div>
+  <span style="font-size:12px;color:var(--text-muted)" id="rowCountLabel">0 rows</span>
+</div>
+
+<!-- Stats Bar -->
+<div class="stats-bar" id="statsBar"></div>
+
+<!-- Table -->
+<div class="table-wrap">
+  <div class="spinner" id="loadingSpinner">
+    <div class="ring"></div>
+    Loading data...
+  </div>
+  <table id="dataTable" style="display:none">
+    <thead>
+      <tr id="tableHeader"></tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<!-- Add Row Modal -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <h2>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add New ASN Entry
+    </h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>GEO</label>
+        <select id="formGeo">
+          <option value="">Select GEO...</option>
+          <option>Coventry</option>
+          <option>Germany EU (Dreieich)</option>
+          <option>Oshawa</option>
+          <option>Chennai</option>
+          <option>Sydney</option>
+          <option>Singapore</option>
+          <option>Tokyo</option>
+          <option>Mexico City</option>
+          <option>São Paulo</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Client</label>
+        <input type="text" id="formClient" placeholder="e.g. LastPass">
+      </div>
+      <div class="form-group full">
+        <label>Inventory Order ID</label>
+        <input type="text" id="formOrderId" placeholder="e.g. fb86eafe-e0a4-...">
+      </div>
+      <div class="form-group">
+        <label>PO Number</label>
+        <input type="text" id="formPO" placeholder="e.g. 100012762">
+      </div>
+      <div class="form-group">
+        <label>Priority</label>
+        <select id="formPriority">
+          <option value="">Select...</option>
+          <option>High</option>
+          <option>Medium</option>
+          <option>Low</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Tracking #</label>
+        <input type="text" id="formTracking" placeholder="URL or tracking number">
+      </div>
+      <div class="form-group full">
+        <label>Comments from Procurement</label>
+        <textarea id="formProcComment" rows="2" placeholder="Delivery details, notes..."></textarea>
+      </div>
+      <div class="form-group full">
+        <label>Comment from OPS</label>
+        <textarea id="formOpsComment" rows="2" placeholder="OPS notes..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Added to Platform</label>
+        <select id="formAddedPlatform">
+          <option value="">Select...</option>
+          <option>Yes</option>
+          <option>No</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeAddForm()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitNewRow()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Entry
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ============================================================
+// CONFIGURATION — Update this URL after deploying Apps Script
+// ============================================================
+const CONFIG = {
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxYCxNubZHKz7IQugPWzA3NQI9CMT5OEKzmkzQ1FRtoNe1XUnUaFZKcBdQlOUc6dXW1JA/exec', // ← PASTE YOUR DEPLOYMENT URL HERE
+  SHEET_ID: '1PDrnm3rW7b-QCh7fLgbArNMR2Dydu5NIHhzWX7HEHrs',
+};
+
+// ── State ──
+let currentTab = 'Pending';
+let allData = { Pending: [], Completed: [] };
+let filteredData = [];
+let startRow = 3;
+let sortCol = -1;
+let sortAsc = true;
+
+const HEADERS = [
+  'GEO', 'Inventory Order ID', 'Client', 'PO Number',
+  'Tracking #', 'Priority', 'Comments from Procurement',
+  'Comment from OPS', 'Added to Platform', 'Total ASNs Pending'
+];
+
+// Columns that are editable (0-indexed)
+const EDITABLE_COLS = [0, 2, 3, 4, 5, 6, 7, 8, 9]; // everything except col 1 (order ID)
+
+// ── Init ──
+document.addEventListener('DOMContentLoaded', () => {
+  if (!CONFIG.APPS_SCRIPT_URL) {
+    document.getElementById('configBanner').style.display = 'block';
+    // Load with sample data for preview
+    loadSampleData();
+    return;
+  }
+  refreshData();
+});
+
+// ── Data Loading ──
+async function refreshData() {
+  showSpinner(true);
+  try {
+    const [pending, completed] = await Promise.all([
+      fetchTab('Pending'),
+      fetchTab('Completed')
+    ]);
+    allData.Pending = pending.rows || [];
+    allData.Completed = completed.rows || [];
+    startRow = pending.startRow || 3;
+
+    updateCounts();
+    populateFilters();
+    applyFilters();
+    showToast('Data refreshed', 'success');
+  } catch (err) {
+    showToast('Failed to load: ' + err.message, 'error');
+  }
+  showSpinner(false);
+}
+
+async function fetchTab(tabName) {
+  const url = `${CONFIG.APPS_SCRIPT_URL}?action=read&tab=${encodeURIComponent(tabName)}`;
+  const res = await fetch(url);
+  return res.json();
+}
+
+// ── Rendering ──
+function renderTable() {
+  const thead = document.getElementById('tableHeader');
+  const tbody = document.getElementById('tableBody');
+
+  // Header
+  thead.innerHTML = HEADERS.map((h, i) =>
+    `<th onclick="sortBy(${i})" class="${sortCol === i ? 'sorted' : ''}">
+      ${h} <span class="sort-arrow">${sortCol === i ? (sortAsc ? '▲' : '▼') : '↕'}</span>
+    </th>`
+  ).join('') + '<th style="width:90px">Actions</th>';
+
+  // Body
+  if (filteredData.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="${HEADERS.length + 1}" style="text-align:center;padding:40px;color:var(--text-muted)">No records found</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filteredData.map((row, ri) => {
+    const dataIdx = row._origIdx;
+    const cells = HEADERS.map((_, ci) => {
+      const val = row[ci] || '';
+      const editable = EDITABLE_COLS.includes(ci) ? 'editable' : '';
+
+      // Special rendering
+      if (ci === 0 && val) return `<td class="${editable}" data-row="${dataIdx}" data-col="${ci}" ${editable ? 'onclick="editCell(this)"' : ''}><span class="geo-tag">${esc(val)}</span></td>`;
+      if (ci === 1 && val) return `<td class="mono">${esc(String(val).substring(0, 18))}…</td>`;
+      if (ci === 4 && val && String(val).startsWith('http')) return `<td class="${editable}" data-row="${dataIdx}" data-col="${ci}" ${editable ? 'onclick="editCell(this)"' : ''}><a class="tracking-link" href="${esc(val)}" target="_blank" onclick="event.stopPropagation()">Track ↗</a></td>`;
+      if (ci === 5 && val) return `<td class="${editable}" data-row="${dataIdx}" data-col="${ci}" ${editable ? 'onclick="editCell(this)"' : ''}><span class="priority-badge priority-${esc(val)}">${esc(val)}</span></td>`;
+
+      return `<td class="${editable}" data-row="${dataIdx}" data-col="${ci}" ${editable ? 'onclick="editCell(this)"' : ''}>${esc(String(val))}</td>`;
+    }).join('');
+
+    const moveLabel = currentTab === 'Pending' ? '✓ Complete' : '↩ Reopen';
+    const actions = `<td>
+      <div class="row-actions">
+        <button class="btn btn-sm" onclick="moveRow(${dataIdx})" title="${moveLabel}">${moveLabel}</button>
+      </div>
+    </td>`;
+
+    return `<tr>${cells}${actions}</tr>`;
+  }).join('');
+
+  document.getElementById('dataTable').style.display = 'table';
+  document.getElementById('rowCountLabel').textContent = `${filteredData.length} row${filteredData.length !== 1 ? 's' : ''}`;
+}
+
+// ── Inline Editing ──
+function editCell(td) {
+  if (td.classList.contains('editing')) return;
+  td.classList.add('editing');
+
+  const row = parseInt(td.dataset.row);
+  const col = parseInt(td.dataset.col);
+  const currentVal = allData[currentTab][row]?.[col] || '';
+
+  // For Priority, use a dropdown
+  if (col === 5) {
+    td.innerHTML = `<select onchange="saveCell(this, ${row}, ${col})" onblur="saveCell(this, ${row}, ${col})">
+      <option value="">—</option>
+      <option ${currentVal === 'High' ? 'selected' : ''}>High</option>
+      <option ${currentVal === 'Medium' ? 'selected' : ''}>Medium</option>
+      <option ${currentVal === 'Low' ? 'selected' : ''}>Low</option>
+    </select>`;
+    td.querySelector('select').focus();
+    return;
+  }
+
+  // For long text fields, use textarea
+  if (col === 6 || col === 7) {
+    td.innerHTML = `<textarea onblur="saveCell(this, ${row}, ${col})">${esc(String(currentVal))}</textarea>`;
+    td.querySelector('textarea').focus();
+    return;
+  }
+
+  // Default: input
+  td.innerHTML = `<input type="text" value="${esc(String(currentVal))}" onblur="saveCell(this, ${row}, ${col})" onkeydown="if(event.key==='Enter'){this.blur();}">`;
+  const inp = td.querySelector('input');
+  inp.focus();
+  inp.select();
+}
+
+async function saveCell(el, row, col) {
+  const newVal = el.value;
+  const oldVal = allData[currentTab][row]?.[col] || '';
+  const td = el.closest('td');
+  td.classList.remove('editing');
+
+  // Update local state immediately
+  allData[currentTab][row][col] = newVal;
+  applyFilters(); // re-render
+
+  if (String(newVal) === String(oldVal)) return;
+
+  // Persist to Google Sheet
+  if (CONFIG.APPS_SCRIPT_URL) {
+    try {
+      const res = await fetch(`${CONFIG.APPS_SCRIPT_URL}?action=update&tab=${encodeURIComponent(currentTab)}`, {
+        method: 'POST',
+        body: JSON.stringify({ row, col, value: newVal }),
+      });
+      const result = await res.json();
+      if (result.error) throw new Error(result.error);
+      showToast('Saved', 'success');
+    } catch (err) {
+      showToast('Save failed: ' + err.message, 'error');
+      // Revert
+      allData[currentTab][row][col] = oldVal;
+      applyFilters();
+    }
+  }
+}
+
+// ── Add Row ──
+function openAddForm() {
+  document.getElementById('addModal').classList.add('active');
+}
+function closeAddForm() {
+  document.getElementById('addModal').classList.remove('active');
+}
+
+async function submitNewRow() {
+  const values = [
+    document.getElementById('formGeo').value,
+    document.getElementById('formOrderId').value,
+    document.getElementById('formClient').value,
+    document.getElementById('formPO').value,
+    document.getElementById('formTracking').value,
+    document.getElementById('formPriority').value,
+    document.getElementById('formProcComment').value,
+    document.getElementById('formOpsComment').value,
+    document.getElementById('formAddedPlatform').value,
+    '',
+  ];
+
+  // Local update
+  allData[currentTab].push(values);
+  updateCounts();
+  populateFilters();
+  applyFilters();
+  closeAddForm();
+  clearForm();
+
+  // Persist
+  if (CONFIG.APPS_SCRIPT_URL) {
+    try {
+      const res = await fetch(`${CONFIG.APPS_SCRIPT_URL}?action=addRow&tab=${encodeURIComponent(currentTab)}`, {
+        method: 'POST',
+        body: JSON.stringify({ values }),
+      });
+      const result = await res.json();
+      if (result.error) throw new Error(result.error);
+      showToast('Row added', 'success');
+    } catch (err) {
+      showToast('Add failed: ' + err.message, 'error');
+    }
+  } else {
+    showToast('Row added (local only)', 'success');
+  }
+}
+
+function clearForm() {
+  ['formGeo','formClient','formOrderId','formPO','formPriority','formTracking','formProcComment','formOpsComment','formAddedPlatform'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    else el.value = '';
+  });
+}
+
+// ── Move Row ──
+async function moveRow(dataIdx) {
+  const row = allData[currentTab][dataIdx];
+  if (!row) return;
+
+  const destTab = currentTab === 'Pending' ? 'Completed' : 'Pending';
+  allData[destTab].push([...row]);
+  allData[currentTab].splice(dataIdx, 1);
+  updateCounts();
+  applyFilters();
+
+  if (CONFIG.APPS_SCRIPT_URL) {
+    try {
+      const res = await fetch(`${CONFIG.APPS_SCRIPT_URL}?action=moveRow&tab=${encodeURIComponent(currentTab === destTab ? (destTab === 'Pending' ? 'Completed' : 'Pending') : (currentTab === 'Pending' ? 'Pending' : 'Completed'))}`, {
+        method: 'POST',
+        // We send the original tab (before move) and the original index
+        body: JSON.stringify({ row: dataIdx }),
+      });
+      // Correct: the source tab name before the splice above
+    } catch (err) {
+      showToast('Move failed on server', 'error');
+    }
+  }
+
+  showToast(`Moved to ${destTab}`, 'success');
+}
+
+// ── Filters / Search ──
+function applyFilters() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const geo = document.getElementById('geoFilter').value;
+  const priority = document.getElementById('priorityFilter').value;
+  const client = document.getElementById('clientFilter').value;
+
+  let data = allData[currentTab].map((row, i) => {
+    const r = [...row];
+    r._origIdx = i;
+    return r;
+  });
+
+  if (search) {
+    data = data.filter(r =>
+      r.some((cell, ci) => ci !== undefined && String(cell).toLowerCase().includes(search))
+    );
+  }
+  if (geo) data = data.filter(r => r[0] === geo);
+  if (priority) data = data.filter(r => r[5] === priority);
+  if (client) data = data.filter(r => r[2] === client);
+
+  // Sort
+  if (sortCol >= 0) {
+    data.sort((a, b) => {
+      const va = String(a[sortCol] || '').toLowerCase();
+      const vb = String(b[sortCol] || '').toLowerCase();
+      return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
+  }
+
+  filteredData = data;
+  renderTable();
+  renderStats();
+}
+
+function sortBy(col) {
+  if (sortCol === col) sortAsc = !sortAsc;
+  else { sortCol = col; sortAsc = true; }
+  applyFilters();
+}
+
+function populateFilters() {
+  const geos = new Set();
+  const clients = new Set();
+  ['Pending', 'Completed'].forEach(tab => {
+    allData[tab].forEach(r => {
+      if (r[0]) geos.add(r[0]);
+      if (r[2]) clients.add(r[2]);
+    });
+  });
+
+  const geoSel = document.getElementById('geoFilter');
+  const curGeo = geoSel.value;
+  geoSel.innerHTML = '<option value="">All GEOs</option>' +
+    [...geos].sort().map(g => `<option ${g === curGeo ? 'selected' : ''}>${esc(g)}</option>`).join('');
+
+  const clientSel = document.getElementById('clientFilter');
+  const curClient = clientSel.value;
+  clientSel.innerHTML = '<option value="">All Clients</option>' +
+    [...clients].sort().map(c => `<option ${c === curClient ? 'selected' : ''}>${esc(c)}</option>`).join('');
+}
+
+// ── Stats ──
+function renderStats() {
+  const data = allData[currentTab];
+  const total = data.length;
+  const highCount = data.filter(r => r[5] === 'High').length;
+  const medCount = data.filter(r => r[5] === 'Medium').length;
+  const lowCount = data.filter(r => r[5] === 'Low').length;
+  const geoGroups = {};
+  data.forEach(r => {
+    if (r[0]) geoGroups[r[0]] = (geoGroups[r[0]] || 0) + 1;
+  });
+
+  const bar = document.getElementById('statsBar');
+  bar.innerHTML = `
+    <div class="stat-chip"><span class="val">${total}</span> Total</div>
+    <div class="stat-chip"><div class="dot" style="background:var(--red)"></div><span class="val">${highCount}</span> High</div>
+    <div class="stat-chip"><div class="dot" style="background:var(--orange)"></div><span class="val">${medCount}</span> Medium</div>
+    <div class="stat-chip"><div class="dot" style="background:var(--green)"></div><span class="val">${lowCount}</span> Low</div>
+    ${Object.entries(geoGroups).map(([g, c]) =>
+      `<div class="stat-chip"><div class="dot" style="background:var(--purple)"></div><span class="val">${c}</span> ${esc(g)}</div>`
+    ).join('')}
+  `;
+}
+
+function updateCounts() {
+  document.getElementById('pendingCount').textContent = allData.Pending.length;
+  document.getElementById('completedCount').textContent = allData.Completed.length;
+}
+
+// ── Tab Switching ──
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t =>
+    t.classList.toggle('active', t.dataset.tab === tab)
+  );
+  sortCol = -1;
+  applyFilters();
+}
+
+// ── Utilities ──
+function showSpinner(show) {
+  document.getElementById('loadingSpinner').style.display = show ? 'flex' : 'none';
+  if (show) document.getElementById('dataTable').style.display = 'none';
+}
+
+function showToast(msg, type = '') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'} ${esc(msg)}`;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+function esc(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ── Sample Data (when no Apps Script URL set) ──
+function loadSampleData() {
+  allData.Pending = [
+    ['Germany EU (Dreieich)', 'fb86eafe-e0a4-4cba-8a26-ea1cb16aafe8', 'LastPass', '100012762', 'https://www.amazon.de/-/en/gp/your-account/ship-track?itemId=ogqkmxnrqoopso', 'High', 'tracking shows del 28 Feb — 1 M650 Mouse', '', '', ''],
+    ['Coventry', 'd22db7f9-47a9-4250-aee9-d0a88e43eb8b', 'Wise', 'PO232', 'https://www.dhl.com/us-en/home/tracking.html?tracking-id=JD014600012549409209', 'High', '1 of 2 Del 5 March — 1 of 2 YubiKey 5C Nano', '', '', ''],
+    ['Chennai', '973a5f7d-2d82-4ec6-948b-286143e5c1e9', 'Velocity Global', '100012008', 'Blue Dart: 53636519591', 'High', 'Date of Delivery 23 Feb 2026', '', '', ''],
+    ['Chennai', 'f0d36d39-5c2e-414d-9ba8-eef5d4e23a2c', 'Velocity Global', '100012393', 'Blue Dart: 53639209853', 'High', 'Date of Delivery 09 Mar 2026', '', '', ''],
+    ['Chennai', '5fb76a07-06b7-449e-8e20-c08179349d35', 'Velocity Global', '100012696', 'Blue Dart: 53639209875', 'High', 'Date of Delivery 09 Mar 2026', '', '', ''],
+  ];
+  allData.Completed = [];
+  updateCounts();
+  populateFilters();
+  applyFilters();
+  showSpinner(false);
+}
+
+// ── Close modal on overlay click ──
+document.getElementById('addModal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeAddForm();
+});
+</script>
+</body>
+</html>
