@@ -307,6 +307,20 @@
   }
   .tracking-link:hover { text-decoration: underline; }
 
+  /* Attachment link */
+  .attach-link {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--accent-glow);
+    transition: background 0.2s;
+  }
+  .attach-link:hover { background: var(--border); }
+
   /* UUID mono */
   .mono {
     font-family: 'JetBrains Mono', monospace;
@@ -537,14 +551,15 @@
         <select id="formGeo">
           <option value="">Select GEO...</option>
           <option>Coventry</option>
-          <option>Germany EU (Dreieich)</option>
+          <option>Germany</option>
           <option>Oshawa</option>
-          <option>Chennai</option>
-          <option>Sydney</option>
+          <option>Montreal</option>
+          <option>India</option>
           <option>Singapore</option>
-          <option>Tokyo</option>
-          <option>Mexico City</option>
-          <option>Sao Paulo</option>
+          <option>Israel</option>
+          <option>LATAM</option>
+          <option>Sydney - VPS</option>
+          <option>Australia</option>
         </select>
       </div>
       <div class="form-group">
@@ -577,6 +592,13 @@
         <textarea id="formProcComment" rows="2" placeholder="Delivery details, notes..."></textarea>
       </div>
       <div class="form-group full">
+        <label>Attachment Link (Google Drive / SharePoint URL)</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          <input type="url" id="formAttachment" placeholder="https://drive.google.com/file/d/..." style="flex:1">
+        </div>
+      </div>
+      <div class="form-group full">
         <label>Comment from OPS</label>
         <textarea id="formOpsComment" rows="2" placeholder="OPS notes..."></textarea>
       </div>
@@ -607,8 +629,11 @@
 // CONFIGURATION — Update this URL after deploying Apps Script
 // ============================================================
 const CONFIG = {
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxYCxNubZHKz7IQugPWzA3NQI9CMT5OEKzmkzQ1FRtoNe1XUnUaFZKcBdQlOUc6dXW1JA/exec', // ← PASTE YOUR DEPLOYMENT URL HERE
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxYCxNubZHKz7IQugPWzA3NQI9CMT5OEKzmkzQ1FRtoNe1XUnUaFZKcBdQlOUc6dXW1JA/exec',
   SHEET_ID: '1PDrnm3rW7b-QCh7fLgbArNMR2Dydu5NIHhzWX7HEHrs',
+  // GIDs for CSV export (reading) — update Completed GID if different
+  PENDING_GID: '0',
+  COMPLETED_GID: '1599791051',
 };
 
 // ── State ──
@@ -631,30 +656,25 @@ const EDITABLE_COLS = [0, 2, 3, 4, 5, 6, 7, 8, 9]; // everything except col 1 (o
 // ── Init ──
 document.addEventListener('DOMContentLoaded', () => {
   try {
-    if (!CONFIG.APPS_SCRIPT_URL) {
-      document.getElementById('configBanner').style.display = 'block';
-      loadSampleData();
-      return;
-    }
+    // Always try to load from Apps Script first
     refreshData();
   } catch(err) {
     console.error('Init error:', err);
-    document.getElementById('loadingSpinner').innerHTML = 'Error: ' + err.message;
+    // Show empty table on failure
+    document.getElementById('loadingSpinner').style.display = 'none';
+    document.getElementById('dataTable').style.display = 'table';
+    updateCounts();
+    applyFilters();
   }
 });
 
 // ── Data Loading ──
 async function refreshData() {
-  if (!CONFIG.APPS_SCRIPT_URL) {
-    loadSampleData();
-    showToast('No Apps Script URL configured - showing sample data', 'error');
-    return;
-  }
   showSpinner(true);
   try {
     const [pending, completed] = await Promise.all([
-      fetchTab('Pending'),
-      fetchTab('Completed')
+      fetchFromAppsScript('read', 'Pending'),
+      fetchFromAppsScript('read', 'Completed')
     ]);
     allData.Pending = pending.rows || [];
     allData.Completed = completed.rows || [];
@@ -665,14 +685,28 @@ async function refreshData() {
     applyFilters();
     showToast('Data refreshed', 'success');
   } catch (err) {
-    showToast('Failed to load: ' + err.message, 'error');
+    console.error('Refresh error:', err);
+    // Show empty table instead of spinner
+    document.getElementById('dataTable').style.display = 'table';
+    updateCounts();
+    applyFilters();
+    showToast('Could not fetch from Google Sheet: ' + err.message, 'error');
   }
   showSpinner(false);
 }
 
-async function fetchTab(tabName) {
-  const url = `${CONFIG.APPS_SCRIPT_URL}?action=read&tab=${encodeURIComponent(tabName)}`;
-  const res = await fetch(url);
+async function fetchFromAppsScript(action, tab, postBody) {
+  const url = `${CONFIG.APPS_SCRIPT_URL}?action=${action}&tab=${encodeURIComponent(tab)}`;
+  const options = {};
+  if (postBody) {
+    options.method = 'POST';
+    options.body = JSON.stringify(postBody);
+    options.headers = { 'Content-Type': 'text/plain' };
+  }
+  options.redirect = 'follow';
+
+  const res = await fetch(url, options);
+  if (!res.ok) throw new Error('HTTP ' + res.status);
   return res.json();
 }
 
@@ -705,6 +739,17 @@ function renderTable() {
       if (ci === 1 && val) return `<td class="mono">${esc(String(val).substring(0, 18))}…</td>`;
       if (ci === 4 && val && String(val).startsWith('http')) return `<td class="${editable}" data-row="${dataIdx}" data-col="${ci}" ${editable ? 'onclick="editCell(this)"' : ''}><a class="tracking-link" href="${esc(val)}" target="_blank" onclick="event.stopPropagation()">Track ↗</a></td>`;
       if (ci === 5 && val) return `<td class="${editable}" data-row="${dataIdx}" data-col="${ci}" ${editable ? 'onclick="editCell(this)"' : ''}><span class="priority-badge priority-${esc(val)}">${esc(val)}</span></td>`;
+
+      // Procurement Comments with optional attachment
+      if (ci === 6 && val) {
+        const parts = String(val).split('|||');
+        const comment = esc(parts[0]);
+        const attachUrl = parts[1] ? parts[1].trim() : '';
+        const attachHtml = attachUrl
+          ? ` <a href="${esc(attachUrl)}" target="_blank" onclick="event.stopPropagation()" class="attach-link" title="Open attachment">📎</a>`
+          : '';
+        return `<td class="${editable}" data-row="${dataIdx}" data-col="${ci}" ${editable ? 'onclick="editCell(this)"' : ''}>${comment}${attachHtml}</td>`;
+      }
 
       return `<td class="${editable}" data-row="${dataIdx}" data-col="${ci}" ${editable ? 'onclick="editCell(this)"' : ''}>${esc(String(val))}</td>`;
     }).join('');
@@ -773,11 +818,7 @@ async function saveCell(el, row, col) {
   // Persist to Google Sheet
   if (CONFIG.APPS_SCRIPT_URL) {
     try {
-      const res = await fetch(`${CONFIG.APPS_SCRIPT_URL}?action=update&tab=${encodeURIComponent(currentTab)}`, {
-        method: 'POST',
-        body: JSON.stringify({ row, col, value: newVal }),
-      });
-      const result = await res.json();
+      const result = await fetchFromAppsScript('update', currentTab, { row, col, value: newVal });
       if (result.error) throw new Error(result.error);
       showToast('Saved', 'success');
     } catch (err) {
@@ -798,6 +839,12 @@ function closeAddForm() {
 }
 
 async function submitNewRow() {
+  let procComment = document.getElementById('formProcComment').value;
+  const attachment = document.getElementById('formAttachment').value.trim();
+  if (attachment) {
+    procComment = procComment + '|||' + attachment;
+  }
+
   const values = [
     document.getElementById('formGeo').value,
     document.getElementById('formOrderId').value,
@@ -805,7 +852,7 @@ async function submitNewRow() {
     document.getElementById('formPO').value,
     document.getElementById('formTracking').value,
     document.getElementById('formPriority').value,
-    document.getElementById('formProcComment').value,
+    procComment,
     document.getElementById('formOpsComment').value,
     document.getElementById('formAddedPlatform').value,
     '',
@@ -822,15 +869,11 @@ async function submitNewRow() {
   // Persist
   if (CONFIG.APPS_SCRIPT_URL) {
     try {
-      const res = await fetch(`${CONFIG.APPS_SCRIPT_URL}?action=addRow&tab=${encodeURIComponent(currentTab)}`, {
-        method: 'POST',
-        body: JSON.stringify({ values }),
-      });
-      const result = await res.json();
+      const result = await fetchFromAppsScript('addRow', currentTab, { values });
       if (result.error) throw new Error(result.error);
-      showToast('Row added', 'success');
+      showToast('Row added and saved to Google Sheet', 'success');
     } catch (err) {
-      showToast('Add failed: ' + err.message, 'error');
+      showToast('Added locally but failed to save to Sheet: ' + err.message, 'error');
     }
   } else {
     showToast('Row added (local only)', 'success');
@@ -838,7 +881,7 @@ async function submitNewRow() {
 }
 
 function clearForm() {
-  ['formGeo','formClient','formOrderId','formPO','formPriority','formTracking','formProcComment','formOpsComment','formAddedPlatform'].forEach(id => {
+  ['formGeo','formClient','formOrderId','formPO','formPriority','formTracking','formProcComment','formAttachment','formOpsComment','formAddedPlatform'].forEach(id => {
     const el = document.getElementById(id);
     if (el.tagName === 'SELECT') el.selectedIndex = 0;
     else el.value = '';
@@ -858,12 +901,9 @@ async function moveRow(dataIdx) {
 
   if (CONFIG.APPS_SCRIPT_URL) {
     try {
-      const res = await fetch(`${CONFIG.APPS_SCRIPT_URL}?action=moveRow&tab=${encodeURIComponent(currentTab === destTab ? (destTab === 'Pending' ? 'Completed' : 'Pending') : (currentTab === 'Pending' ? 'Pending' : 'Completed'))}`, {
-        method: 'POST',
-        // We send the original tab (before move) and the original index
-        body: JSON.stringify({ row: dataIdx }),
-      });
-      // Correct: the source tab name before the splice above
+      // sourceTab is the tab BEFORE the move (where the row currently lives in the sheet)
+      const sourceTab = currentTab === 'Pending' ? 'Pending' : 'Completed';
+      await fetchFromAppsScript('moveRow', sourceTab, { row: dataIdx });
     } catch (err) {
       showToast('Move failed on server', 'error');
     }
