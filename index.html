@@ -254,7 +254,7 @@ td.editable textarea,td.editable input,td.editable select{width:100%;font-family
 // CONFIG - Update APPS_SCRIPT_URL after deploying the backend
 // ============================================================
 var CONFIG = {
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbykvrkrXjpAaegTC70NCwnGdvan2xMQ6l8mYEzdUlkk-JuWZQlyq8XMS2n6NJu_DNs_/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwdyFAYaPFQvIZLxINdub5dSFoJGdalETwo0so8OBxYjdMOcsjwEqyJWVKrdhFJDB6C/exec',
   SHEET_ID: '1SAz-S2wrCyobA73NwY6N_vl27iVu7wLP5c15-L6hrcs',
   PENDING_GID: '0',
   COMPLETED_GID: '1018371555'
@@ -334,11 +334,18 @@ function writeToAppsScript(action, body) {
     console.warn('No Apps Script URL - write skipped');
     return Promise.resolve();
   }
-  return fetch(CONFIG.APPS_SCRIPT_URL + '?action=' + action, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify(body)
+  // Encode payload as query param and use script injection (no CORS)
+  var payload = encodeURIComponent(JSON.stringify(body));
+  var url = CONFIG.APPS_SCRIPT_URL + '?action=' + action + '&payload=' + payload;
+
+  return new Promise(function(resolve) {
+    var script = document.createElement('script');
+    script.src = url + '&callback=_apsCb' + Date.now();
+    script.onload = function() { script.remove(); resolve(); };
+    script.onerror = function() { script.remove(); resolve(); };
+    document.head.appendChild(script);
+    // Fallback timeout
+    setTimeout(function() { if(script.parentNode) script.remove(); resolve(); }, 10000);
   });
 }
 
