@@ -6,482 +6,147 @@
 <title>ASN Follow Up Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg-primary: #f0f5fa;
-    --bg-secondary: #ffffff;
-    --bg-card: #ffffff;
-    --bg-row-hover: #e8f0fe;
-    --bg-input: #f5f8fc;
-    --border: #d4dfe9;
-    --border-focus: #4a90d9;
-    --text-primary: #1a2b3d;
-    --text-secondary: #4a5e74;
-    --text-muted: #8295a8;
-    --accent: #4a90d9;
-    --accent-hover: #3a7bc8;
-    --accent-glow: rgba(74, 144, 217, 0.12);
-    --red: #dc3545;
-    --red-bg: rgba(220, 53, 69, 0.08);
-    --red-border: rgba(220, 53, 69, 0.25);
-    --orange: #e67e22;
-    --orange-bg: rgba(230, 126, 34, 0.08);
-    --orange-border: rgba(230, 126, 34, 0.25);
-    --green: #27ae60;
-    --green-bg: rgba(39, 174, 96, 0.08);
-    --green-border: rgba(39, 174, 96, 0.25);
-    --purple: #6c63ff;
-    --purple-bg: rgba(108, 99, 255, 0.08);
-    --cyan: #2196f3;
-  }
+:root {
+  --bg-primary: #f0f5fa;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-row-hover: #e8f0fe;
+  --bg-input: #f5f8fc;
+  --border: #d4dfe9;
+  --text-primary: #1a2b3d;
+  --text-secondary: #4a5e74;
+  --text-muted: #8295a8;
+  --accent: #4a90d9;
+  --accent-hover: #3a7bc8;
+  --accent-glow: rgba(74,144,217,0.12);
+  --red: #dc3545;
+  --red-bg: rgba(220,53,69,0.08);
+  --red-border: rgba(220,53,69,0.25);
+  --orange: #e67e22;
+  --orange-bg: rgba(230,126,34,0.08);
+  --orange-border: rgba(230,126,34,0.25);
+  --green: #27ae60;
+  --green-bg: rgba(39,174,96,0.08);
+  --green-border: rgba(39,174,96,0.25);
+  --purple: #6c63ff;
+  --purple-bg: rgba(108,99,255,0.08);
+  --cyan: #2196f3;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+.header{background:linear-gradient(135deg,#fff 0%,#e8f0fe 100%);border-bottom:1px solid var(--border);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.header-left{display:flex;align-items:center;gap:16px}
+.logo{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--purple));border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;box-shadow:0 4px 12px rgba(74,144,217,0.25)}
+.header-title{font-size:20px;font-weight:700;letter-spacing:-0.3px}
+.header-sub{font-size:12px;color:var(--text-muted);margin-top:2px}
+.pending-count{display:inline-flex;align-items:center;gap:6px;background:var(--orange-bg);color:var(--orange);border:1px solid var(--orange-border);padding:4px 14px;border-radius:20px;font-size:13px;font-weight:700;margin-left:12px}
+.pending-count .num{font-size:16px}
+.header-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+.btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-primary);cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{background:var(--bg-row-hover);border-color:var(--accent)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-green{background:var(--green-bg);border-color:var(--green-border);color:var(--green);font-weight:700}
+.btn-green:hover{background:var(--green);color:#fff}
+.btn-muted{background:var(--bg-input);border-color:var(--border);color:var(--text-muted)}
+.btn-muted:hover{color:var(--accent);border-color:var(--accent)}
+.btn-sm{padding:5px 10px;font-size:12px}
 
-  /* ── Header ── */
-  .header {
-    background: linear-gradient(135deg, #ffffff 0%, #e8f0fe 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 20px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-  .header-left { display: flex; align-items: center; gap: 16px; }
-  .logo {
-    width: 40px; height: 40px;
-    background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 18px; color: #fff;
-    box-shadow: 0 4px 12px rgba(74, 144, 217, 0.25);
-  }
-  .header-title { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
-  .header-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-  .header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.tabs{display:flex;gap:2px;background:var(--bg-input);border-radius:10px;padding:3px}
+.tab{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:7px 18px;border-radius:8px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s}
+.tab.active{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(74,144,217,0.25)}
+.tab:not(.active):hover{color:var(--text-primary)}
+.tab .badge{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:10px;font-size:11px;font-weight:700;padding:0 6px;margin-left:6px;background:rgba(255,255,255,0.15)}
+.tab:not(.active) .badge{background:var(--border)}
 
-  /* ── Buttons ── */
-  .btn {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--bg-card);
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.2s;
-    display: inline-flex; align-items: center; gap: 6px;
-    white-space: nowrap;
-  }
-  .btn:hover { background: var(--bg-row-hover); border-color: var(--accent); }
-  .btn-primary {
-    background: var(--accent); border-color: var(--accent); color: #fff;
-  }
-  .btn-primary:hover { background: var(--accent-hover); }
-  .btn-danger { color: var(--red); border-color: var(--red-border); }
-  .btn-danger:hover { background: var(--red-bg); }
-  .btn-sm { padding: 5px 10px; font-size: 12px; }
-  .btn-icon { padding: 6px 8px; }
+.toolbar{padding:16px 32px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--bg-secondary)}
+.search-box{flex:1;min-width:200px;max-width:360px;position:relative}
+.search-box svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none}
+.search-box input{width:100%;font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 12px 9px 38px;border-radius:8px;border:1px solid var(--border);background:var(--bg-input);color:var(--text-primary);outline:none;transition:border-color .2s}
+.search-box input:focus{border-color:var(--accent)}
+.search-box input::placeholder{color:var(--text-muted)}
+.filter-select{font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-input);color:var(--text-primary);outline:none;min-width:130px;cursor:pointer}
+.filter-select:focus{border-color:var(--accent)}
+.spacer{flex:1}
 
-  /* ── Tabs ── */
-  .tabs {
-    display: flex; gap: 2px;
-    background: var(--bg-input);
-    border-radius: 10px; padding: 3px;
-  }
-  .tab {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 600;
-    padding: 7px 18px;
-    border-radius: 8px;
-    border: none;
-    background: transparent;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .tab.active {
-    background: var(--accent);
-    color: #fff;
-    box-shadow: 0 2px 8px rgba(74, 144, 217, 0.25);
-  }
-  .tab:not(.active):hover { color: var(--text-primary); }
-  .tab .badge {
-    display: inline-flex; align-items: center; justify-content: center;
-    min-width: 20px; height: 20px;
-    border-radius: 10px;
-    font-size: 11px; font-weight: 700;
-    padding: 0 6px; margin-left: 6px;
-    background: rgba(255,255,255,0.15);
-  }
-  .tab:not(.active) .badge { background: var(--border); }
+.stats-bar{display:flex;gap:16px;padding:12px 32px;background:var(--bg-secondary);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.stat-chip{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:8px;background:var(--bg-card);border:1px solid var(--border);font-size:12px}
+.stat-chip .dot{width:8px;height:8px;border-radius:50%}
+.stat-chip .val{font-weight:700;font-size:14px}
 
-  /* ── Toolbar ── */
-  .toolbar {
-    padding: 16px 32px;
-    display: flex; align-items: center; gap: 12px;
-    flex-wrap: wrap;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg-secondary);
-  }
-  .search-box {
-    flex: 1; min-width: 200px; max-width: 360px;
-    position: relative;
-  }
-  .search-box svg {
-    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-    color: var(--text-muted); pointer-events: none;
-  }
-  .search-box input {
-    width: 100%;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    padding: 9px 12px 9px 38px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--bg-input);
-    color: var(--text-primary);
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .search-box input:focus { border-color: var(--accent); }
-  .search-box input::placeholder { color: var(--text-muted); }
+.table-wrap{padding:0 32px 32px;overflow-x:auto;margin-top:16px}
+table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;min-width:1100px}
+thead th{position:sticky;top:0;z-index:10;background:var(--bg-card);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);padding:12px 14px;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;transition:color .2s}
+thead th:hover{color:var(--text-primary)}
+thead th .sort-arrow{margin-left:4px;font-size:10px;opacity:.5}
+thead th.sorted .sort-arrow{opacity:1;color:var(--accent)}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:var(--bg-row-hover)}
+td{padding:10px 14px;font-size:13px;color:var(--text-secondary);border-bottom:1px solid rgba(212,223,233,0.5);vertical-align:top;max-width:220px}
+td.editable{cursor:text;border-radius:4px}
+td.editable:hover{outline:1px dashed var(--text-muted);outline-offset:-2px}
+td.editable.editing{padding:4px 6px;outline:2px solid var(--accent);outline-offset:-2px}
+td.editable textarea,td.editable input,td.editable select{width:100%;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-primary);background:var(--bg-input);border:1px solid var(--border);padding:6px 8px;border-radius:4px;outline:none;resize:vertical;min-height:32px}
 
-  .filter-select {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px; padding: 9px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--bg-input);
-    color: var(--text-primary);
-    outline: none;
-    min-width: 130px;
-    cursor: pointer;
-  }
-  .filter-select:focus { border-color: var(--accent); }
+.priority-badge{display:inline-flex;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.priority-High{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.priority-Medium{background:var(--orange-bg);color:var(--orange);border:1px solid var(--orange-border)}
+.priority-Low{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.geo-tag{display:inline-flex;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;background:var(--purple-bg);color:var(--purple);border:1px solid rgba(108,99,255,0.25);white-space:nowrap}
+.tracking-link{color:var(--cyan);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:11px;word-break:break-all}
+.tracking-link:hover{text-decoration:underline}
+.attach-link{display:inline-flex;align-items:center;margin-left:6px;text-decoration:none;font-size:14px;padding:2px 6px;border-radius:4px;background:var(--accent-glow);transition:background .2s}
+.attach-link:hover{background:var(--border)}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)}
 
-  .spacer { flex: 1; }
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.active{display:flex}
+.modal{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;width:95%;max-width:640px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,0.12)}
+.modal h2{font-size:18px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group.full{grid-column:1/-1}
+.form-group label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted)}
+.form-group input,.form-group select,.form-group textarea{font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-input);color:var(--text-primary);outline:none;transition:border-color .2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
+.form-group textarea{resize:vertical;min-height:60px}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
 
-  /* ── Stats Bar ── */
-  .stats-bar {
-    display: flex; gap: 16px; padding: 12px 32px;
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
-  }
-  .stat-chip {
-    display: flex; align-items: center; gap: 8px;
-    padding: 6px 14px;
-    border-radius: 8px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    font-size: 12px;
-  }
-  .stat-chip .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-  }
-  .stat-chip .val { font-weight: 700; font-size: 14px; }
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:200;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;background:var(--bg-card);border:1px solid var(--border);color:var(--text-primary);box-shadow:0 8px 24px rgba(0,0,0,0.1);animation:slideIn .3s ease;display:flex;align-items:center;gap:8px}
+.toast.success{border-color:var(--green-border)}
+.toast.error{border-color:var(--red-border)}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 
-  /* ── Table ── */
-  .table-wrap {
-    padding: 0 32px 32px;
-    overflow-x: auto;
-    margin-top: 16px;
-  }
-  table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    min-width: 1100px;
-  }
-  thead th {
-    position: sticky; top: 0; z-index: 10;
-    background: var(--bg-card);
-    font-size: 11px; font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-muted);
-    padding: 12px 14px;
-    text-align: left;
-    border-bottom: 2px solid var(--border);
-    white-space: nowrap;
-    cursor: pointer;
-    user-select: none;
-    transition: color 0.2s;
-  }
-  thead th:hover { color: var(--text-primary); }
-  thead th .sort-arrow { margin-left: 4px; font-size: 10px; opacity: 0.5; }
-  thead th.sorted .sort-arrow { opacity: 1; color: var(--accent); }
+.spinner{display:flex;align-items:center;justify-content:center;padding:80px 0;color:var(--text-muted);font-size:14px;gap:12px}
+.spinner .ring{width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-  tbody tr {
-    transition: background 0.15s;
-    border-bottom: 1px solid var(--border);
-  }
-  tbody tr:hover { background: var(--bg-row-hover); }
-  tbody tr:last-child td { border-bottom: none; }
-
-  td {
-    padding: 10px 14px;
-    font-size: 13px;
-    color: var(--text-secondary);
-    border-bottom: 1px solid rgba(36, 48, 73, 0.5);
-    vertical-align: top;
-    max-width: 220px;
-  }
-
-  td.editable {
-    cursor: text;
-    position: relative;
-    border-radius: 4px;
-  }
-  td.editable:hover {
-    outline: 1px dashed var(--text-muted);
-    outline-offset: -2px;
-  }
-  td.editable.editing {
-    padding: 4px 6px;
-    outline: 2px solid var(--accent);
-    outline-offset: -2px;
-  }
-  td.editable textarea,
-  td.editable input {
-    width: 100%;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    color: var(--text-primary);
-    background: var(--bg-input);
-    border: none;
-    padding: 6px 8px;
-    border-radius: 4px;
-    outline: none;
-    resize: vertical;
-    min-height: 32px;
-  }
-
-  /* Priority badges */
-  .priority-badge {
-    display: inline-flex;
-    padding: 3px 10px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-  }
-  .priority-High { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
-  .priority-Medium { background: var(--orange-bg); color: var(--orange); border: 1px solid var(--orange-border); }
-  .priority-Low { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
-
-  /* GEO tags */
-  .geo-tag {
-    display: inline-flex;
-    padding: 3px 10px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 600;
-    background: var(--purple-bg);
-    color: var(--purple);
-    border: 1px solid rgba(139, 92, 246, 0.25);
-    white-space: nowrap;
-  }
-
-  /* Tracking link */
-  .tracking-link {
-    color: var(--cyan);
-    text-decoration: none;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    word-break: break-all;
-  }
-  .tracking-link:hover { text-decoration: underline; }
-
-  /* Attachment link */
-  .attach-link {
-    display: inline-flex;
-    align-items: center;
-    margin-left: 6px;
-    text-decoration: none;
-    font-size: 14px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    background: var(--accent-glow);
-    transition: background 0.2s;
-  }
-  .attach-link:hover { background: var(--border); }
-
-  /* UUID mono */
-  .mono {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--text-muted);
-  }
-
-  /* Row actions */
-  .row-actions {
-    display: flex; gap: 4px;
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
-  tbody tr:hover .row-actions { opacity: 1; }
-
-  /* ── Modal / Form ── */
-  .modal-overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.3);
-    backdrop-filter: blur(4px);
-    z-index: 100;
-    align-items: center; justify-content: center;
-  }
-  .modal-overlay.active { display: flex; }
-  .modal {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    width: 95%; max-width: 640px;
-    max-height: 90vh; overflow-y: auto;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.12);
-  }
-  .modal h2 {
-    font-size: 18px; font-weight: 700;
-    margin-bottom: 20px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
-  .form-group { display: flex; flex-direction: column; gap: 5px; }
-  .form-group.full { grid-column: 1 / -1; }
-  .form-group label {
-    font-size: 11px; font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-muted);
-  }
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--bg-input);
-    color: var(--text-primary);
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .form-group input:focus,
-  .form-group select:focus,
-  .form-group textarea:focus { border-color: var(--accent); }
-  .form-group textarea { resize: vertical; min-height: 60px; }
-  .form-actions {
-    display: flex; gap: 10px; justify-content: flex-end;
-    margin-top: 20px;
-  }
-
-  /* ── Toast ── */
-  .toast-container {
-    position: fixed; bottom: 24px; right: 24px;
-    z-index: 200;
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .toast {
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-size: 13px; font-weight: 500;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    color: var(--text-primary);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-    animation: slideIn 0.3s ease;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .toast.success { border-color: var(--green-border); }
-  .toast.error { border-color: var(--red-border); }
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateX(20px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-
-  /* ── Spinner ── */
-  .spinner {
-    display: flex; align-items: center; justify-content: center;
-    padding: 80px 0;
-    color: var(--text-muted);
-    font-size: 14px;
-    gap: 12px;
-  }
-  .spinner .ring {
-    width: 24px; height: 24px;
-    border: 3px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ── Config banner ── */
-  .config-banner {
-    background: var(--orange-bg);
-    border: 1px solid var(--orange-border);
-    border-radius: 10px;
-    margin: 16px 32px;
-    padding: 14px 20px;
-    font-size: 13px;
-    color: var(--orange);
-    display: none;
-  }
-  .config-banner code {
-    background: rgba(245, 158, 11, 0.15);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-  }
-
-  /* ── Responsive ── */
-  @media (max-width: 768px) {
-    .header, .toolbar, .stats-bar, .table-wrap { padding-left: 16px; padding-right: 16px; }
-    .form-grid { grid-template-columns: 1fr; }
-    .config-banner { margin: 16px; }
-  }
+@media(max-width:768px){
+  .header,.toolbar,.stats-bar,.table-wrap{padding-left:16px;padding-right:16px}
+  .form-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 
-<!-- Header -->
 <div class="header">
   <div class="header-left">
     <div class="logo">A</div>
     <div>
-      <div class="header-title">ASN Follow Up Tracker</div>
+      <div class="header-title">
+        ASN Follow Up Tracker
+        <span class="pending-count" id="pendingBadge"><span class="num" id="pendingNum">0</span> Pending</span>
+      </div>
       <div class="header-sub">Warehouse Late Delivery Tracking</div>
     </div>
   </div>
   <div class="header-right">
     <div class="tabs">
-      <button class="tab active" data-tab="Pending" onclick="switchTab('Pending')">
-        Pending <span class="badge" id="pendingCount">-</span>
-      </button>
-      <button class="tab" data-tab="Completed" onclick="switchTab('Completed')">
-        Completed <span class="badge" id="completedCount">-</span>
-      </button>
+      <button class="tab active" data-tab="Pending" onclick="switchTab('Pending')">Pending <span class="badge" id="pendingCount">0</span></button>
+      <button class="tab" data-tab="Completed" onclick="switchTab('Completed')">Completed <span class="badge" id="completedCount">0</span></button>
     </div>
     <button class="btn btn-primary" onclick="openAddForm()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -494,51 +159,30 @@
   </div>
 </div>
 
-<!-- Config Banner (shown if Apps Script URL not set) -->
-<div class="config-banner" id="configBanner">
-  ⚠️ <strong>Setup required:</strong> Set your Apps Script deployment URL in the <code>CONFIG.APPS_SCRIPT_URL</code> variable at the bottom of this file's <code>&lt;script&gt;</code> section.
-</div>
-
-<!-- Toolbar -->
 <div class="toolbar">
   <div class="search-box">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <input type="text" id="searchInput" placeholder="Search orders, clients, PO numbers..." oninput="applyFilters()">
   </div>
-  <select class="filter-select" id="geoFilter" onchange="applyFilters()">
-    <option value="">All GEOs</option>
-  </select>
+  <select class="filter-select" id="geoFilter" onchange="applyFilters()"><option value="">All GEOs</option></select>
   <select class="filter-select" id="priorityFilter" onchange="applyFilters()">
-    <option value="">All Priorities</option>
-    <option value="High">High</option>
-    <option value="Medium">Medium</option>
-    <option value="Low">Low</option>
+    <option value="">All Priorities</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option>
   </select>
-  <select class="filter-select" id="clientFilter" onchange="applyFilters()">
-    <option value="">All Clients</option>
-  </select>
+  <select class="filter-select" id="clientFilter" onchange="applyFilters()"><option value="">All Clients</option></select>
   <div class="spacer"></div>
   <span style="font-size:12px;color:var(--text-muted)" id="rowCountLabel">0 rows</span>
 </div>
 
-<!-- Stats Bar -->
 <div class="stats-bar" id="statsBar"></div>
 
-<!-- Table -->
 <div class="table-wrap">
-  <div class="spinner" id="loadingSpinner">
-    <div class="ring"></div>
-    Loading data...
-  </div>
+  <div class="spinner" id="loadingSpinner"><div class="ring"></div>Loading data...</div>
   <table id="dataTable" style="display:none">
-    <thead>
-      <tr id="tableHeader"></tr>
-    </thead>
+    <thead><tr id="tableHeader"></tr></thead>
     <tbody id="tableBody"></tbody>
   </table>
 </div>
 
-<!-- Add Row Modal -->
 <div class="modal-overlay" id="addModal">
   <div class="modal">
     <h2>
@@ -550,16 +194,9 @@
         <label>GEO</label>
         <select id="formGeo">
           <option value="">Select GEO...</option>
-          <option>Coventry</option>
-          <option>Germany</option>
-          <option>Oshawa</option>
-          <option>Montreal</option>
-          <option>India</option>
-          <option>Singapore</option>
-          <option>Israel</option>
-          <option>LATAM</option>
-          <option>Sydney - VPS</option>
-          <option>Australia</option>
+          <option>Coventry</option><option>Germany</option><option>Oshawa</option><option>Montreal</option>
+          <option>India</option><option>Singapore</option><option>Israel</option><option>LATAM</option>
+          <option>Sydney - VPS</option><option>Australia</option>
         </select>
       </div>
       <div class="form-group">
@@ -577,10 +214,7 @@
       <div class="form-group">
         <label>Priority</label>
         <select id="formPriority">
-          <option value="">Select...</option>
-          <option>High</option>
-          <option>Medium</option>
-          <option>Low</option>
+          <option value="">Select...</option><option>High</option><option>Medium</option><option>Low</option>
         </select>
       </div>
       <div class="form-group full">
@@ -602,14 +236,6 @@
         <label>Comment from OPS</label>
         <textarea id="formOpsComment" rows="2" placeholder="OPS notes..."></textarea>
       </div>
-      <div class="form-group">
-        <label>Added to Platform</label>
-        <select id="formAddedPlatform">
-          <option value="">Select...</option>
-          <option>Yes</option>
-          <option>No</option>
-        </select>
-      </div>
     </div>
     <div class="form-actions">
       <button class="btn" onclick="closeAddForm()">Cancel</button>
@@ -621,441 +247,313 @@
   </div>
 </div>
 
-<!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
 // ============================================================
-// CONFIGURATION — Update this URL after deploying Apps Script
+// CONFIG - Update APPS_SCRIPT_URL after deploying the backend
 // ============================================================
-const CONFIG = {
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxYCxNubZHKz7IQugPWzA3NQI9CMT5OEKzmkzQ1FRtoNe1XUnUaFZKcBdQlOUc6dXW1JA/exec',
-  SHEET_ID: '1PDrnm3rW7b-QCh7fLgbArNMR2Dydu5NIHhzWX7HEHrs',
-  // GIDs for CSV export (reading) — update Completed GID if different
+var CONFIG = {
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbykvrkrXjpAaegTC70NCwnGdvan2xMQ6l8mYEzdUlkk-JuWZQlyq8XMS2n6NJu_DNs_/exec',
+  SHEET_ID: '1SAz-S2wrCyobA73NwY6N_vl27iVu7wLP5c15-L6hrcs',
   PENDING_GID: '0',
-  COMPLETED_GID: '1599791051',
+  COMPLETED_GID: '1018371555'
 };
 
-// ── State ──
-let currentTab = 'Pending';
-let allData = { Pending: [], Completed: [] };
-let filteredData = [];
-let startRow = 3;
-let sortCol = -1;
-let sortAsc = true;
+var currentTab = 'Pending';
+var allData = { Pending: [], Completed: [] };
+var filteredData = [];
+var sortCol = -1;
+var sortAsc = true;
 
-const HEADERS = [
-  'GEO', 'Inventory Order ID', 'Client', 'PO Number',
-  'Tracking #', 'Priority', 'Comments from Procurement',
-  'Comment from OPS', 'Added to Platform', 'Total ASNs Pending'
-];
-
-// Columns that are editable (0-indexed)
-const EDITABLE_COLS = [0, 2, 3, 4, 5, 6, 7, 8, 9]; // everything except col 1 (order ID)
+var HEADERS = ['GEO','Inventory Order ID','Client','PO Number','Tracking #','Priority','Comments from Procurement','Comment from OPS','Added to Platform'];
+var EDITABLE_COLS = [0,2,3,4,5,6,7,8];
 
 // ── Init ──
-document.addEventListener('DOMContentLoaded', () => {
-  try {
-    // Always try to load from Apps Script first
-    refreshData();
-  } catch(err) {
-    console.error('Init error:', err);
-    // Show empty table on failure
-    document.getElementById('loadingSpinner').style.display = 'none';
-    document.getElementById('dataTable').style.display = 'table';
-    updateCounts();
-    applyFilters();
-  }
+document.addEventListener('DOMContentLoaded', function() {
+  refreshData();
 });
 
-// ── Data Loading ──
-async function refreshData() {
+// ── Read via CSV export (works on GitHub Pages) ──
+function refreshData() {
   showSpinner(true);
-  try {
-    const [pending, completed] = await Promise.all([
-      fetchFromAppsScript('read', 'Pending'),
-      fetchFromAppsScript('read', 'Completed')
-    ]);
-    allData.Pending = pending.rows || [];
-    allData.Completed = completed.rows || [];
-    startRow = pending.startRow || 3;
-
+  Promise.all([
+    fetchCSV(CONFIG.PENDING_GID),
+    fetchCSV(CONFIG.COMPLETED_GID)
+  ]).then(function(results) {
+    allData.Pending = results[0];
+    allData.Completed = results[1];
     updateCounts();
     populateFilters();
     applyFilters();
+    showSpinner(false);
     showToast('Data refreshed', 'success');
-  } catch (err) {
+  }).catch(function(err) {
     console.error('Refresh error:', err);
-    // Show empty table instead of spinner
+    showSpinner(false);
     document.getElementById('dataTable').style.display = 'table';
     updateCounts();
     applyFilters();
-    showToast('Could not fetch from Google Sheet: ' + err.message, 'error');
-  }
-  showSpinner(false);
+    showToast('Could not load: ' + err.message, 'error');
+  });
 }
 
-async function fetchFromAppsScript(action, tab, postBody) {
-  const url = `${CONFIG.APPS_SCRIPT_URL}?action=${action}&tab=${encodeURIComponent(tab)}`;
-  const options = {};
-  if (postBody) {
-    options.method = 'POST';
-    options.body = JSON.stringify(postBody);
-    options.headers = { 'Content-Type': 'text/plain' };
-  }
-  options.redirect = 'follow';
-
-  const res = await fetch(url, options);
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  return res.json();
+function fetchCSV(gid) {
+  var url = 'https://docs.google.com/spreadsheets/d/' + CONFIG.SHEET_ID + '/export?format=csv&gid=' + gid;
+  return fetch(url).then(function(res) {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.text();
+  }).then(function(text) {
+    return parseCSV(text);
+  });
 }
 
-// ── Rendering ──
+function parseCSV(text) {
+  var rows = [], row = [], field = '', inQ = false;
+  for (var i = 0; i < text.length; i++) {
+    var c = text[i], n = text[i + 1];
+    if (inQ) {
+      if (c === '"' && n === '"') { field += '"'; i++; }
+      else if (c === '"') { inQ = false; }
+      else { field += c; }
+    } else {
+      if (c === '"') { inQ = true; }
+      else if (c === ',') { row.push(field); field = ''; }
+      else if (c === '\r' && n === '\n') { row.push(field); field = ''; rows.push(row); row = []; i++; }
+      else if (c === '\n') { row.push(field); field = ''; rows.push(row); row = []; }
+      else { field += c; }
+    }
+  }
+  if (field || row.length) { row.push(field); rows.push(row); }
+  return rows.slice(1).filter(function(r) { return r.some(function(c) { return c.trim() !== ''; }); });
+}
+
+// ── Write via Apps Script (no-cors, fire and forget) ──
+function writeToAppsScript(action, body) {
+  if (!CONFIG.APPS_SCRIPT_URL) {
+    console.warn('No Apps Script URL - write skipped');
+    return Promise.resolve();
+  }
+  return fetch(CONFIG.APPS_SCRIPT_URL + '?action=' + action, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(body)
+  });
+}
+
+// ── Render ──
 function renderTable() {
-  const thead = document.getElementById('tableHeader');
-  const tbody = document.getElementById('tableBody');
+  var thead = document.getElementById('tableHeader');
+  var tbody = document.getElementById('tableBody');
 
-  // Header
-  thead.innerHTML = HEADERS.map((h, i) =>
-    `<th onclick="sortBy(${i})" class="${sortCol === i ? 'sorted' : ''}">
-      ${h} <span class="sort-arrow">${sortCol === i ? (sortAsc ? '▲' : '▼') : '↕'}</span>
-    </th>`
-  ).join('') + '<th style="width:90px">Actions</th>';
+  thead.innerHTML = HEADERS.map(function(h, i) {
+    return '<th onclick="sortBy(' + i + ')" class="' + (sortCol === i ? 'sorted' : '') + '">' +
+      h + ' <span class="sort-arrow">' + (sortCol === i ? (sortAsc ? '\u25B2' : '\u25BC') : '\u2195') + '</span></th>';
+  }).join('') + '<th style="width:140px">Actions</th>';
 
-  // Body
   if (filteredData.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="${HEADERS.length + 1}" style="text-align:center;padding:40px;color:var(--text-muted)">No records found</td></tr>`;
+    tbody.innerHTML = '<tr><td colspan="' + (HEADERS.length + 1) + '" style="text-align:center;padding:40px;color:var(--text-muted)">No records found</td></tr>';
+    document.getElementById('dataTable').style.display = 'table';
     return;
   }
 
-  tbody.innerHTML = filteredData.map((row, ri) => {
-    const dataIdx = row._origIdx;
-    const cells = HEADERS.map((_, ci) => {
-      const val = row[ci] || '';
-      const editable = EDITABLE_COLS.includes(ci) ? 'editable' : '';
+  tbody.innerHTML = filteredData.map(function(row) {
+    var di = row._origIdx;
+    var cells = HEADERS.map(function(_, ci) {
+      var val = row[ci] || '';
+      var ed = EDITABLE_COLS.indexOf(ci) !== -1 ? 'editable' : '';
+      var click = ed ? ' onclick="editCell(this)"' : '';
+      var attrs = ' class="' + ed + '" data-row="' + di + '" data-col="' + ci + '"' + click;
 
-      // Special rendering
-      if (ci === 0 && val) return `<td class="${editable}" data-row="${dataIdx}" data-col="${ci}" ${editable ? 'onclick="editCell(this)"' : ''}><span class="geo-tag">${esc(val)}</span></td>`;
-      if (ci === 1 && val) return `<td class="mono">${esc(String(val).substring(0, 18))}…</td>`;
-      if (ci === 4 && val && String(val).startsWith('http')) return `<td class="${editable}" data-row="${dataIdx}" data-col="${ci}" ${editable ? 'onclick="editCell(this)"' : ''}><a class="tracking-link" href="${esc(val)}" target="_blank" onclick="event.stopPropagation()">Track ↗</a></td>`;
-      if (ci === 5 && val) return `<td class="${editable}" data-row="${dataIdx}" data-col="${ci}" ${editable ? 'onclick="editCell(this)"' : ''}><span class="priority-badge priority-${esc(val)}">${esc(val)}</span></td>`;
-
-      // Procurement Comments with optional attachment
+      if (ci === 0 && val) return '<td' + attrs + '><span class="geo-tag">' + esc(val) + '</span></td>';
+      if (ci === 1 && val) return '<td class="mono" title="' + esc(val) + '">' + esc(String(val).substring(0, 18)) + '...</td>';
+      if (ci === 4 && val && String(val).startsWith('http')) return '<td' + attrs + '><a class="tracking-link" href="' + esc(val) + '" target="_blank" onclick="event.stopPropagation()">Track \u2197</a></td>';
+      if (ci === 5 && val) return '<td' + attrs + '><span class="priority-badge priority-' + esc(val) + '">' + esc(val) + '</span></td>';
       if (ci === 6 && val) {
-        const parts = String(val).split('|||');
-        const comment = esc(parts[0]);
-        const attachUrl = parts[1] ? parts[1].trim() : '';
-        const attachHtml = attachUrl
-          ? ` <a href="${esc(attachUrl)}" target="_blank" onclick="event.stopPropagation()" class="attach-link" title="Open attachment">📎</a>`
-          : '';
-        return `<td class="${editable}" data-row="${dataIdx}" data-col="${ci}" ${editable ? 'onclick="editCell(this)"' : ''}>${comment}${attachHtml}</td>`;
+        var parts = String(val).split('|||');
+        var comment = esc(parts[0]);
+        var aUrl = parts[1] ? parts[1].trim() : '';
+        var aHtml = aUrl ? ' <a href="' + esc(aUrl) + '" target="_blank" onclick="event.stopPropagation()" class="attach-link" title="Open attachment">\uD83D\uDCCE</a>' : '';
+        return '<td' + attrs + '>' + comment + aHtml + '</td>';
       }
-
-      return `<td class="${editable}" data-row="${dataIdx}" data-col="${ci}" ${editable ? 'onclick="editCell(this)"' : ''}>${esc(String(val))}</td>`;
+      return '<td' + attrs + '>' + esc(String(val)) + '</td>';
     }).join('');
 
-    const moveLabel = currentTab === 'Pending' ? '✓ Complete' : '↩ Reopen';
-    const actions = `<td>
-      <div class="row-actions">
-        <button class="btn btn-sm" onclick="moveRow(${dataIdx})" title="${moveLabel}">${moveLabel}</button>
-      </div>
-    </td>`;
+    var actionBtn = currentTab === 'Pending'
+      ? '<button class="btn btn-green btn-sm" onclick="markReceived(' + di + ')">\u2713 Mark Received</button>'
+      : '<button class="btn btn-muted btn-sm" onclick="moveBack(' + di + ')">\u21A9 Reopen</button>';
 
-    return `<tr>${cells}${actions}</tr>`;
+    return '<tr>' + cells + '<td><div style="display:flex;gap:4px">' + actionBtn + '</div></td></tr>';
   }).join('');
 
   document.getElementById('dataTable').style.display = 'table';
-  document.getElementById('rowCountLabel').textContent = `${filteredData.length} row${filteredData.length !== 1 ? 's' : ''}`;
+  document.getElementById('rowCountLabel').textContent = filteredData.length + ' row' + (filteredData.length !== 1 ? 's' : '');
 }
 
-// ── Inline Editing ──
+// ── Inline Edit ──
 function editCell(td) {
   if (td.classList.contains('editing')) return;
   td.classList.add('editing');
+  var row = parseInt(td.dataset.row);
+  var col = parseInt(td.dataset.col);
+  var cur = allData[currentTab][row] ? (allData[currentTab][row][col] || '') : '';
 
-  const row = parseInt(td.dataset.row);
-  const col = parseInt(td.dataset.col);
-  const currentVal = allData[currentTab][row]?.[col] || '';
-
-  // For Priority, use a dropdown
   if (col === 5) {
-    td.innerHTML = `<select onchange="saveCell(this, ${row}, ${col})" onblur="saveCell(this, ${row}, ${col})">
-      <option value="">—</option>
-      <option ${currentVal === 'High' ? 'selected' : ''}>High</option>
-      <option ${currentVal === 'Medium' ? 'selected' : ''}>Medium</option>
-      <option ${currentVal === 'Low' ? 'selected' : ''}>Low</option>
-    </select>`;
+    td.innerHTML = '<select onchange="saveCell(this,' + row + ',' + col + ')" onblur="saveCell(this,' + row + ',' + col + ')"><option value="">--</option><option' + (cur === 'High' ? ' selected' : '') + '>High</option><option' + (cur === 'Medium' ? ' selected' : '') + '>Medium</option><option' + (cur === 'Low' ? ' selected' : '') + '>Low</option></select>';
     td.querySelector('select').focus();
     return;
   }
-
-  // For long text fields, use textarea
   if (col === 6 || col === 7) {
-    td.innerHTML = `<textarea onblur="saveCell(this, ${row}, ${col})">${esc(String(currentVal))}</textarea>`;
+    td.innerHTML = '<textarea onblur="saveCell(this,' + row + ',' + col + ')">' + esc(String(cur)) + '</textarea>';
     td.querySelector('textarea').focus();
     return;
   }
-
-  // Default: input
-  td.innerHTML = `<input type="text" value="${esc(String(currentVal))}" onblur="saveCell(this, ${row}, ${col})" onkeydown="if(event.key==='Enter'){this.blur();}">`;
-  const inp = td.querySelector('input');
-  inp.focus();
-  inp.select();
+  td.innerHTML = '<input type="text" value="' + esc(String(cur)) + '" onblur="saveCell(this,' + row + ',' + col + ')" onkeydown="if(event.key===\'Enter\')this.blur()">';
+  td.querySelector('input').focus();
 }
 
-async function saveCell(el, row, col) {
-  const newVal = el.value;
-  const oldVal = allData[currentTab][row]?.[col] || '';
-  const td = el.closest('td');
-  td.classList.remove('editing');
-
-  // Update local state immediately
+function saveCell(el, row, col) {
+  var newVal = el.value;
+  var oldVal = allData[currentTab][row] ? (allData[currentTab][row][col] || '') : '';
+  el.closest('td').classList.remove('editing');
   allData[currentTab][row][col] = newVal;
-  applyFilters(); // re-render
-
+  applyFilters();
   if (String(newVal) === String(oldVal)) return;
-
-  // Persist to Google Sheet
-  if (CONFIG.APPS_SCRIPT_URL) {
-    try {
-      const result = await fetchFromAppsScript('update', currentTab, { row, col, value: newVal });
-      if (result.error) throw new Error(result.error);
-      showToast('Saved', 'success');
-    } catch (err) {
-      showToast('Save failed: ' + err.message, 'error');
-      // Revert
-      allData[currentTab][row][col] = oldVal;
-      applyFilters();
-    }
-  }
+  writeToAppsScript('updateCell', { tab: currentTab, row: row, col: col, value: newVal })
+    .then(function() { showToast('Saved', 'success'); })
+    .catch(function() { showToast('Save may have failed', 'error'); });
 }
 
 // ── Add Row ──
-function openAddForm() {
-  document.getElementById('addModal').classList.add('active');
-}
-function closeAddForm() {
-  document.getElementById('addModal').classList.remove('active');
-}
+function openAddForm() { document.getElementById('addModal').classList.add('active'); }
+function closeAddForm() { document.getElementById('addModal').classList.remove('active'); }
 
-async function submitNewRow() {
-  let procComment = document.getElementById('formProcComment').value;
-  const attachment = document.getElementById('formAttachment').value.trim();
-  if (attachment) {
-    procComment = procComment + '|||' + attachment;
-  }
+function submitNewRow() {
+  var proc = document.getElementById('formProcComment').value;
+  var att = document.getElementById('formAttachment').value.trim();
+  if (att) proc = proc + '|||' + att;
 
-  const values = [
+  var values = [
     document.getElementById('formGeo').value,
     document.getElementById('formOrderId').value,
     document.getElementById('formClient').value,
     document.getElementById('formPO').value,
     document.getElementById('formTracking').value,
     document.getElementById('formPriority').value,
-    procComment,
+    proc,
     document.getElementById('formOpsComment').value,
-    document.getElementById('formAddedPlatform').value,
-    '',
+    ''
   ];
 
-  // Local update
-  allData[currentTab].push(values);
+  allData.Pending.push(values);
   updateCounts();
   populateFilters();
-  applyFilters();
+  if (currentTab === 'Pending') applyFilters();
   closeAddForm();
   clearForm();
 
-  // Persist
-  if (CONFIG.APPS_SCRIPT_URL) {
-    try {
-      const result = await fetchFromAppsScript('addRow', currentTab, { values });
-      if (result.error) throw new Error(result.error);
-      showToast('Row added and saved to Google Sheet', 'success');
-    } catch (err) {
-      showToast('Added locally but failed to save to Sheet: ' + err.message, 'error');
-    }
-  } else {
-    showToast('Row added (local only)', 'success');
-  }
+  writeToAppsScript('addRow', { tab: 'Pending', values: values })
+    .then(function() { showToast('Row added to Pending', 'success'); })
+    .catch(function() { showToast('Added locally, Sheet write may have failed', 'error'); });
 }
 
 function clearForm() {
-  ['formGeo','formClient','formOrderId','formPO','formPriority','formTracking','formProcComment','formAttachment','formOpsComment','formAddedPlatform'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el.tagName === 'SELECT') el.selectedIndex = 0;
-    else el.value = '';
+  ['formGeo','formClient','formOrderId','formPO','formPriority','formTracking','formProcComment','formAttachment','formOpsComment'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
   });
 }
 
-// ── Move Row ──
-async function moveRow(dataIdx) {
-  const row = allData[currentTab][dataIdx];
+// ── Mark Received ──
+function markReceived(di) {
+  var row = allData.Pending[di];
+  if (!row || !confirm('Mark this order as received?')) return;
+  allData.Completed.push(row.slice());
+  allData.Pending.splice(di, 1);
+  updateCounts(); applyFilters();
+  writeToAppsScript('markReceived', { row: di })
+    .then(function() { showToast('Moved to Completed', 'success'); })
+    .catch(function() { showToast('Moved locally, Sheet write may have failed', 'error'); });
+}
+
+function moveBack(di) {
+  var row = allData.Completed[di];
   if (!row) return;
-
-  const destTab = currentTab === 'Pending' ? 'Completed' : 'Pending';
-  allData[destTab].push([...row]);
-  allData[currentTab].splice(dataIdx, 1);
-  updateCounts();
-  applyFilters();
-
-  if (CONFIG.APPS_SCRIPT_URL) {
-    try {
-      // sourceTab is the tab BEFORE the move (where the row currently lives in the sheet)
-      const sourceTab = currentTab === 'Pending' ? 'Pending' : 'Completed';
-      await fetchFromAppsScript('moveRow', sourceTab, { row: dataIdx });
-    } catch (err) {
-      showToast('Move failed on server', 'error');
-    }
-  }
-
-  showToast(`Moved to ${destTab}`, 'success');
+  allData.Pending.push(row.slice());
+  allData.Completed.splice(di, 1);
+  updateCounts(); applyFilters();
+  writeToAppsScript('moveBack', { row: di })
+    .then(function() { showToast('Moved back to Pending', 'success'); })
+    .catch(function() { showToast('Moved locally, Sheet write may have failed', 'error'); });
 }
 
-// ── Filters / Search ──
+// ── Filters ──
 function applyFilters() {
-  const search = document.getElementById('searchInput').value.toLowerCase();
-  const geo = document.getElementById('geoFilter').value;
-  const priority = document.getElementById('priorityFilter').value;
-  const client = document.getElementById('clientFilter').value;
+  var search = document.getElementById('searchInput').value.toLowerCase();
+  var geo = document.getElementById('geoFilter').value;
+  var pri = document.getElementById('priorityFilter').value;
+  var cli = document.getElementById('clientFilter').value;
 
-  let data = allData[currentTab].map((row, i) => {
-    const r = [...row];
-    r._origIdx = i;
-    return r;
-  });
-
-  if (search) {
-    data = data.filter(r =>
-      r.some((cell, ci) => ci !== undefined && String(cell).toLowerCase().includes(search))
-    );
-  }
-  if (geo) data = data.filter(r => r[0] === geo);
-  if (priority) data = data.filter(r => r[5] === priority);
-  if (client) data = data.filter(r => r[2] === client);
-
-  // Sort
-  if (sortCol >= 0) {
-    data.sort((a, b) => {
-      const va = String(a[sortCol] || '').toLowerCase();
-      const vb = String(b[sortCol] || '').toLowerCase();
-      return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
-    });
-  }
-
+  var data = allData[currentTab].map(function(r, i) { var c = r.slice(); c._origIdx = i; return c; });
+  if (search) data = data.filter(function(r) { return r.some(function(c) { return String(c).toLowerCase().indexOf(search) !== -1; }); });
+  if (geo) data = data.filter(function(r) { return r[0] === geo; });
+  if (pri) data = data.filter(function(r) { return r[5] === pri; });
+  if (cli) data = data.filter(function(r) { return r[2] === cli; });
+  if (sortCol >= 0) data.sort(function(a, b) { var x = String(a[sortCol]||'').toLowerCase(), y = String(b[sortCol]||'').toLowerCase(); return sortAsc ? x.localeCompare(y) : y.localeCompare(x); });
   filteredData = data;
-  renderTable();
-  renderStats();
+  renderTable(); renderStats();
 }
 
-function sortBy(col) {
-  if (sortCol === col) sortAsc = !sortAsc;
-  else { sortCol = col; sortAsc = true; }
-  applyFilters();
-}
+function sortBy(col) { if (sortCol === col) sortAsc = !sortAsc; else { sortCol = col; sortAsc = true; } applyFilters(); }
 
 function populateFilters() {
-  const geos = new Set();
-  const clients = new Set();
-  ['Pending', 'Completed'].forEach(tab => {
-    allData[tab].forEach(r => {
-      if (r[0]) geos.add(r[0]);
-      if (r[2]) clients.add(r[2]);
-    });
-  });
-
-  const geoSel = document.getElementById('geoFilter');
-  const curGeo = geoSel.value;
-  geoSel.innerHTML = '<option value="">All GEOs</option>' +
-    [...geos].sort().map(g => `<option ${g === curGeo ? 'selected' : ''}>${esc(g)}</option>`).join('');
-
-  const clientSel = document.getElementById('clientFilter');
-  const curClient = clientSel.value;
-  clientSel.innerHTML = '<option value="">All Clients</option>' +
-    [...clients].sort().map(c => `<option ${c === curClient ? 'selected' : ''}>${esc(c)}</option>`).join('');
+  var geos = {}, clients = {};
+  ['Pending','Completed'].forEach(function(t) { allData[t].forEach(function(r) { if(r[0]) geos[r[0]]=1; if(r[2]) clients[r[2]]=1; }); });
+  var gs = document.getElementById('geoFilter'), gv = gs.value;
+  gs.innerHTML = '<option value="">All GEOs</option>' + Object.keys(geos).sort().map(function(g){return '<option'+(g===gv?' selected':'')+'>'+esc(g)+'</option>';}).join('');
+  var cs = document.getElementById('clientFilter'), cv = cs.value;
+  cs.innerHTML = '<option value="">All Clients</option>' + Object.keys(clients).sort().map(function(c){return '<option'+(c===cv?' selected':'')+'>'+esc(c)+'</option>';}).join('');
 }
 
-// ── Stats ──
 function renderStats() {
-  const data = allData[currentTab];
-  const total = data.length;
-  const highCount = data.filter(r => r[5] === 'High').length;
-  const medCount = data.filter(r => r[5] === 'Medium').length;
-  const lowCount = data.filter(r => r[5] === 'Low').length;
-  const geoGroups = {};
-  data.forEach(r => {
-    if (r[0]) geoGroups[r[0]] = (geoGroups[r[0]] || 0) + 1;
-  });
-
-  const bar = document.getElementById('statsBar');
-  bar.innerHTML = `
-    <div class="stat-chip"><span class="val">${total}</span> Total</div>
-    <div class="stat-chip"><div class="dot" style="background:var(--red)"></div><span class="val">${highCount}</span> High</div>
-    <div class="stat-chip"><div class="dot" style="background:var(--orange)"></div><span class="val">${medCount}</span> Medium</div>
-    <div class="stat-chip"><div class="dot" style="background:var(--green)"></div><span class="val">${lowCount}</span> Low</div>
-    ${Object.entries(geoGroups).map(([g, c]) =>
-      `<div class="stat-chip"><div class="dot" style="background:var(--purple)"></div><span class="val">${c}</span> ${esc(g)}</div>`
-    ).join('')}
-  `;
+  var d = allData[currentTab], t = d.length;
+  var h = d.filter(function(r){return r[5]==='High'}).length;
+  var m = d.filter(function(r){return r[5]==='Medium'}).length;
+  var l = d.filter(function(r){return r[5]==='Low'}).length;
+  var gg = {};
+  d.forEach(function(r){if(r[0]) gg[r[0]]=(gg[r[0]]||0)+1;});
+  document.getElementById('statsBar').innerHTML =
+    '<div class="stat-chip"><span class="val">'+t+'</span> Total</div>' +
+    '<div class="stat-chip"><div class="dot" style="background:var(--red)"></div><span class="val">'+h+'</span> High</div>' +
+    '<div class="stat-chip"><div class="dot" style="background:var(--orange)"></div><span class="val">'+m+'</span> Medium</div>' +
+    '<div class="stat-chip"><div class="dot" style="background:var(--green)"></div><span class="val">'+l+'</span> Low</div>' +
+    Object.keys(gg).map(function(g){return '<div class="stat-chip"><div class="dot" style="background:var(--purple)"></div><span class="val">'+gg[g]+'</span> '+esc(g)+'</div>';}).join('');
 }
 
 function updateCounts() {
-  document.getElementById('pendingCount').textContent = allData.Pending.length;
-  document.getElementById('completedCount').textContent = allData.Completed.length;
+  var p = allData.Pending.length, c = allData.Completed.length;
+  document.getElementById('pendingCount').textContent = p;
+  document.getElementById('completedCount').textContent = c;
+  document.getElementById('pendingNum').textContent = p;
 }
 
-// ── Tab Switching ──
 function switchTab(tab) {
   currentTab = tab;
-  document.querySelectorAll('.tab').forEach(t =>
-    t.classList.toggle('active', t.dataset.tab === tab)
-  );
-  sortCol = -1;
-  applyFilters();
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab===tab);});
+  sortCol = -1; applyFilters();
 }
 
-// ── Utilities ──
-function showSpinner(show) {
-  document.getElementById('loadingSpinner').style.display = show ? 'flex' : 'none';
-  if (show) document.getElementById('dataTable').style.display = 'none';
+function showSpinner(s) { document.getElementById('loadingSpinner').style.display = s?'flex':'none'; if(s) document.getElementById('dataTable').style.display='none'; }
+function showToast(msg, type) {
+  var c = document.getElementById('toastContainer'), t = document.createElement('div');
+  t.className = 'toast '+(type||'');
+  t.innerHTML = (type==='success'?'\u2713':type==='error'?'\u2715':'\u2139')+' '+esc(msg);
+  c.appendChild(t); setTimeout(function(){t.remove()},3000);
 }
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 
-function showToast(msg, type = '') {
-  const container = document.getElementById('toastContainer');
-  const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
-  toast.innerHTML = `${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'} ${esc(msg)}`;
-  container.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-}
-
-function esc(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-// ── Sample Data (when no Apps Script URL set) ──
-function loadSampleData() {
-  allData.Pending = [
-    ['Germany EU (Dreieich)', 'fb86eafe-e0a4-4cba-8a26-ea1cb16aafe8', 'LastPass', '100012762', 'https://www.amazon.de/-/en/gp/your-account/ship-track?itemId=ogqkmxnrqoopso', 'High', 'tracking shows del 28 Feb - 1 M650 Mouse', '', '', ''],
-    ['Coventry', 'd22db7f9-47a9-4250-aee9-d0a88e43eb8b', 'Wise', 'PO232', 'https://www.dhl.com/us-en/home/tracking.html?tracking-id=JD014600012549409209', 'High', '1 of 2 Del 5 March - 1 of 2 YubiKey 5C Nano', '', '', ''],
-    ['Chennai', '973a5f7d-2d82-4ec6-948b-286143e5c1e9', 'Velocity Global', '100012008', 'Blue Dart: 53636519591', 'High', 'Date of Delivery 23 Feb 2026', '', '', ''],
-    ['Chennai', 'f0d36d39-5c2e-414d-9ba8-eef5d4e23a2c', 'Velocity Global', '100012393', 'Blue Dart: 53639209853', 'High', 'Date of Delivery 09 Mar 2026', '', '', ''],
-    ['Chennai', '5fb76a07-06b7-449e-8e20-c08179349d35', 'Velocity Global', '100012696', 'Blue Dart: 53639209875', 'High', 'Date of Delivery 09 Mar 2026', '', '', ''],
-  ];
-  allData.Completed = [];
-  document.getElementById('loadingSpinner').style.display = 'none';
-  document.getElementById('dataTable').style.display = 'table';
-  updateCounts();
-  populateFilters();
-  applyFilters();
-}
-
-// ── Close modal on overlay click ──
-document.getElementById('addModal').addEventListener('click', (e) => {
-  if (e.target === e.currentTarget) closeAddForm();
-});
+document.getElementById('addModal').addEventListener('click',function(e){if(e.target===e.currentTarget)closeAddForm();});
 </script>
 </body>
 </html>
