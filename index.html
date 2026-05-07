@@ -197,6 +197,7 @@ td.editable textarea,td.editable input,td.editable select{width:100%;font-family
           <option>Coventry</option><option>Germany</option><option>Oshawa</option><option>Montreal</option>
           <option>India</option><option>Singapore</option><option>Israel</option><option>LATAM</option>
           <option>Sydney - VPS</option><option>Australia</option>
+          <option>Japan</option><option>Korea</option><option>Manila</option>
         </select>
       </div>
       <div class="form-group">
@@ -356,7 +357,7 @@ function renderTable() {
 
   thead.innerHTML = HEADERS.map(function(h, i) {
     return '<th onclick="sortBy(' + i + ')" class="' + (sortCol === i ? 'sorted' : '') + '">' +
-      h + ' <span class="sort-arrow">' + (sortCol === i ? (sortAsc ? '\u25B2' : '\u25BC') : '\u2195') + '</span></th>';
+      h + ' <span class="sort-arrow">' + (sortCol === i ? (sortAsc ? '▲' : '▼') : '↕') + '</span></th>';
   }).join('') + '<th style="width:140px">Actions</th>';
 
   if (filteredData.length === 0) {
@@ -375,21 +376,21 @@ function renderTable() {
 
       if (ci === 0 && val) return '<td' + attrs + '><span class="geo-tag">' + esc(val) + '</span></td>';
       if (ci === 1 && val) return '<td class="mono" title="' + esc(val) + '">' + esc(String(val).substring(0, 18)) + '...</td>';
-      if (ci === 4 && val && String(val).startsWith('http')) return '<td' + attrs + '><a class="tracking-link" href="' + esc(val) + '" target="_blank" onclick="event.stopPropagation()">Track \u2197</a></td>';
+      if (ci === 4 && val && String(val).startsWith('http')) return '<td' + attrs + '><a class="tracking-link" href="' + esc(val) + '" target="_blank" onclick="event.stopPropagation()">Track ↗</a></td>';
       if (ci === 5 && val) return '<td' + attrs + '><span class="priority-badge priority-' + esc(val) + '">' + esc(val) + '</span></td>';
       if (ci === 6 && val) {
         var parts = String(val).split('|||');
         var comment = esc(parts[0]);
         var aUrl = parts[1] ? parts[1].trim() : '';
-        var aHtml = aUrl ? ' <a href="' + esc(aUrl) + '" target="_blank" onclick="event.stopPropagation()" class="attach-link" title="Open attachment">\uD83D\uDCCE</a>' : '';
+        var aHtml = aUrl ? ' <a href="' + esc(aUrl) + '" target="_blank" onclick="event.stopPropagation()" class="attach-link" title="Open attachment">📎</a>' : '';
         return '<td' + attrs + '>' + comment + aHtml + '</td>';
       }
       return '<td' + attrs + '>' + esc(String(val)) + '</td>';
     }).join('');
 
     var actionBtn = currentTab === 'Pending'
-      ? '<button class="btn btn-green btn-sm" onclick="markReceived(' + di + ')">\u2713 Mark Received</button>'
-      : '<button class="btn btn-muted btn-sm" onclick="moveBack(' + di + ')">\u21A9 Reopen</button>';
+      ? '<button class="btn btn-green btn-sm" onclick="markReceived(' + di + ')">✓ Mark Received</button>'
+      : '<button class="btn btn-muted btn-sm" onclick="moveBack(' + di + ')">↩ Reopen</button>';
 
     return '<tr>' + cells + '<td><div style="display:flex;gap:4px">' + actionBtn + '</div></td></tr>';
   }).join('');
@@ -555,7 +556,7 @@ function showSpinner(s) { document.getElementById('loadingSpinner').style.displa
 function showToast(msg, type) {
   var c = document.getElementById('toastContainer'), t = document.createElement('div');
   t.className = 'toast '+(type||'');
-  t.innerHTML = (type==='success'?'\u2713':type==='error'?'\u2715':'\u2139')+' '+esc(msg);
+  t.innerHTML = (type==='success'?'✓':type==='error'?'✕':'ℹ')+' '+esc(msg);
   c.appendChild(t); setTimeout(function(){t.remove()},3000);
 }
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
